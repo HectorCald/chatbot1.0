@@ -1,0 +1,39 @@
+{
+    "nombre": "Mi Restaurante Hector",
+    "ubicacion": "Av. Principal 123, Ciudad",
+    "horario": "Lunes a Domingo, 10:00 AM - 10:00 PM",
+    "menu": {
+      "especialidad": "Pizza artesanal",
+      "platillos": [
+        {
+          "nombre": "Pizza Margarita",
+          "precio": 12
+        },
+        {
+          "nombre": "Hamburguesa Doble",
+          "precio": 10
+        },
+        {
+          "nombre": "Pasta Alfredo",
+          "precio": 15
+        }
+      ],
+      "bebidas": [
+        {
+          "nombre": "Refresco",
+          "precio": 2
+        },
+        {
+          "nombre": "Cerveza",
+          "precio": 3
+        },
+        {
+          "nombre": "Café",
+          "precio": 1.5
+        }
+      ]
+    },
+    "contacto": "contacto@mirestaurante.com",
+    "pago": "Aceptamos efectivo y pagos con código QR"
+  }
+  
