@@ -32,6 +32,9 @@ const intentosNoEntiendo = new Map();
 // Mapa para controlar el estado de desactivación del bot
 const botInactivo = new Map();
 
+// Mapa para controlar si el cliente está en proceso de realizar un pedido
+const enProcesoDePedido = new Map();
+
 client.on('qr', qr => {
     console.log('Escanea este código QR en WhatsApp:', qr);
 });
@@ -87,6 +90,42 @@ client.on('message', async message => {
     }
 
     const mensajeLower = message.body.toLowerCase();
+
+    // Verificar si el cliente está en proceso de realizar un pedido
+    if (enProcesoDePedido.has(message.from)) {
+        // Registrar el pedido y desactivar el bot por 15 minutos
+        await client.sendMessage(message.from, '🍽️ Pedido registrado. En unos minutos alguien del personal confirmará tu pedido y la forma de pago.');
+        enProcesoDePedido.delete(message.from); // Eliminar el estado de "en proceso de pedido"
+        botInactivo.set(message.from, true); // Desactivar el bot por 15 minutos
+        activarBot(message.from); // Reactivar el bot después de 15 minutos
+        return;
+    }
+
+    // Verificar si el mensaje contiene alguna palabra del menú
+    let pedidoPosible = false;
+    if (empresa.menu && empresa.menu.platillos) {
+        for (const platillo of empresa.menu.platillos) {
+            if (mensajeLower.includes(platillo.nombre.toLowerCase())) {
+                pedidoPosible = true;
+                break;
+            }
+        }
+    }
+    if (empresa.menu && empresa.menu.bebidas) {
+        for (const bebida of empresa.menu.bebidas) {
+            if (mensajeLower.includes(bebida.nombre.toLowerCase())) {
+                pedidoPosible = true;
+                break;
+            }
+        }
+    }
+
+    // Si se detecta un posible pedido, pedir más detalles
+    if (pedidoPosible) {
+        await client.sendMessage(message.from, '📝 Parece que quieres realizar un pedido. Escríbelo más detallado y en un solo mensaje a continuación.');
+        enProcesoDePedido.set(message.from, true); // Marcar que el cliente está en proceso de realizar un pedido
+        return;
+    }
 
     // Contar intentos fallidos
     if (!intentosNoEntiendo.has(message.from)) {
